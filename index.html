@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DNA-Diff: Day-to-Night Adaptation via Diffusion</title>
+<meta name="description" content="DNA-Diff turns labelled daytime ReID data into realistic night-time training images using lighting-aware environment tokens and IP-Adapter identity preservation. BMVC 2026.">
+<meta name="author" content="DNA-Diff authors">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="DNA-Diff: Day-to-Night Adaptation via Diffusion">
+<meta property="og:description" content="Lighting-Aware Diffusion-based Data Augmentation for Robust Low-Light Re-Identification — BMVC 2026.">
+<meta property="og:image" content="figures/qualitative_comparison.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DNA-Diff: Day-to-Night Adaptation via Diffusion">
+<meta name="twitter:description" content="Lighting-Aware Diffusion-based Data Augmentation for Robust Low-Light Re-Identification — BMVC 2026.">
+<meta name="twitter:image" content="figures/qualitative_comparison.png">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌃</text></svg>">
+
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --ink:#070b14;
+  --ink-2:#0c1324;
+  --panel:#111a2e;
+  --panel-2:#16203a;
+  --line:rgba(255,255,255,.10);
+  --line-strong:rgba(255,255,255,.18);
+  --text:#e8edf7;
+  --text-dim:#a9b4cc;
+  --text-faint:#7b88a4;
+  --amber:#ffb347;      /* streetlight */
+  --amber-soft:#ffd79a;
+  --cyan:#5fd4ff;       /* moonlight */
+  --violet:#a98bff;
+  --radius:16px;
+  --maxw:1120px;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px;-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--ink);color:var(--text);
+  font-family:var(--sans);font-size:17px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.narrow{max-width:800px;margin-inline:auto}
+
+/* ---------- sky backdrop ---------- */
+.sky{position:fixed;inset:0;z-index:-2;background:
+  radial-gradient(1100px 620px at 78% -8%, rgba(255,179,71,.16), transparent 62%),
+  radial-gradient(900px 560px at 10% 4%, rgba(95,212,255,.12), transparent 60%),
+  linear-gradient(180deg,#0a1226 0%, #070b14 46%, #05070e 100%);
+}
+.stars{position:fixed;inset:0;z-index:-1;opacity:.5;pointer-events:none;
+  background-image:
+    radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 28% 42%, #cfe3ff, transparent),
+    radial-gradient(1.6px 1.6px at 46% 12%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 63% 33%, #ffe9c7, transparent),
+    radial-gradient(1.3px 1.3px at 81% 20%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 91% 47%, #cfe3ff, transparent),
+    radial-gradient(1.2px 1.2px at 36% 66%, #fff, transparent),
+    radial-gradient(1px 1px at 70% 72%, #fff, transparent);
+  mask-image:linear-gradient(180deg,#000 0%,#000 32%,transparent 70%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 32%,transparent 70%);
+  animation:twinkle 7s ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.32}to{opacity:.62}}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  background:rgba(7,11,20,.72);border-bottom:1px solid var(--line)}
+.nav-in{max-width:var(--maxw);margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:20px}
+.brand{font-weight:700;letter-spacing:-.02em;color:var(--text);font-size:16px;white-space:nowrap}
+.brand span{color:var(--amber)}
+.nav-links{display:flex;gap:20px;margin-left:auto;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--text-dim);font-size:14.5px;white-space:nowrap;font-weight:500}
+.nav-links a:hover{color:var(--amber);text-decoration:none}
+
+/* ---------- hero ---------- */
+header{padding:76px 0 56px;text-align:center;position:relative}
+.venue{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--amber);
+  border:1px solid rgba(255,179,71,.34);background:rgba(255,179,71,.08);
+  padding:6px 14px;border-radius:999px;margin-bottom:26px}
+h1{font-family:var(--serif);font-size:clamp(2.5rem,6.2vw,4.2rem);line-height:1.04;
+  margin:0 0 16px;letter-spacing:-.025em;font-weight:600}
+h1 .grad{background:linear-gradient(100deg,var(--amber) 0%,var(--amber-soft) 38%,var(--cyan) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.tagline{font-size:clamp(1.05rem,2.3vw,1.4rem);color:var(--text-dim);max-width:780px;
+  margin:0 auto 30px;line-height:1.45;font-weight:400}
+.authors{font-size:1.02rem;color:var(--text);margin:0 0 6px}
+.affil{font-size:.93rem;color:var(--text-faint);margin:0 0 32px}
+
+.btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:11px 20px;border-radius:999px;
+  font-size:15px;font-weight:600;border:1px solid var(--line-strong);
+  background:rgba(255,255,255,.055);color:var(--text);transition:.18s ease}
+.btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3);
+  transform:translateY(-2px);text-decoration:none}
+.btn svg{width:17px;height:17px;flex:none}
+.btn.primary{background:linear-gradient(100deg,#ffb347,#ff9a3c);color:#2a1700;border-color:transparent;
+  box-shadow:0 8px 28px -10px rgba(255,160,60,.75)}
+.btn.primary:hover{box-shadow:0 12px 34px -10px rgba(255,160,60,.9)}
+.btn.disabled{opacity:.42;cursor:not-allowed;pointer-events:none}
+.btn .soon{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(255,255,255,.14);padding:2px 7px;border-radius:5px}
+
+/* ---------- sections ---------- */
+section{padding:62px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:none}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;
+  color:var(--amber);margin:0 0 10px}
+h2{font-family:var(--serif);font-size:clamp(1.7rem,3.6vw,2.4rem);margin:0 0 20px;
+  letter-spacing:-.02em;font-weight:600}
+h3{font-size:1.12rem;margin:0 0 8px;letter-spacing:-.01em}
+p{margin:0 0 18px;color:var(--text-dim)}
+p strong,li strong{color:var(--text);font-weight:650}
+
+/* ---------- figures ---------- */
+figure{margin:0 0 10px}
+.fig-card{background:#f7f8fb;border-radius:var(--radius);padding:14px;
+  border:1px solid var(--line-strong);box-shadow:0 22px 60px -30px rgba(0,0,0,.9);cursor:zoom-in}
+.fig-card img{border-radius:8px;width:100%}
+figcaption{margin-top:12px;font-size:.9rem;color:var(--text-faint);text-align:center;line-height:1.5}
+figcaption b{color:var(--text-dim);font-weight:600}
+.zoomhint{font-size:.78rem;color:var(--text-faint);text-align:center;margin-top:6px;opacity:.75}
+
+/* ---------- cards ---------- */
+.grid{display:grid;gap:16px}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{background:linear-gradient(170deg,var(--panel),var(--ink-2));border:1px solid var(--line);
+  border-radius:var(--radius);padding:24px;transition:.2s ease}
+.card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+.card p{margin:0;font-size:.95rem;line-height:1.6}
+.card .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;
+  border-radius:9px;font-size:13px;font-weight:700;margin-bottom:14px;
+  background:rgba(255,179,71,.14);color:var(--amber);border:1px solid rgba(255,179,71,.28)}
+.card.cy .num{background:rgba(95,212,255,.13);color:var(--cyan);border-color:rgba(95,212,255,.28)}
+.card.vi .num{background:rgba(169,139,255,.13);color:var(--violet);border-color:rgba(169,139,255,.28)}
+code.inl{font-family:var(--mono);font-size:.86em;background:rgba(255,255,255,.07);
+  padding:2px 6px;border-radius:5px;color:var(--amber-soft);border:1px solid var(--line)}
+
+/* ---------- stage list ---------- */
+.stages{display:grid;gap:14px;margin-top:26px}
+.stage{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
+  background:linear-gradient(170deg,var(--panel),var(--ink-2));border:1px solid var(--line);
+  border-left:3px solid var(--amber);border-radius:var(--radius);padding:22px 24px}
+.stage:nth-child(2){border-left-color:#5fe08a}
+.stage:nth-child(3){border-left-color:var(--violet)}
+.stage .tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--text-faint);padding-top:4px;white-space:nowrap}
+.stage h3{margin-bottom:6px}
+.stage p{margin:0;font-size:.95rem}
+.stage .file{font-family:var(--mono);font-size:.8rem;color:var(--text-faint);margin-top:8px;display:block}
+
+/* ---------- code ---------- */
+.code{position:relative;background:#060a13;border:1px solid var(--line);border-radius:12px;
+  margin:0 0 18px;overflow:hidden;min-width:0}
+.grid > *{min-width:0}
+.code-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:9px 14px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.028)}
+.code-head span{font-family:var(--mono);font-size:11.5px;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--text-faint)}
+.copy{background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--text-dim);
+  font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:7px;cursor:pointer;
+  font-family:var(--sans);transition:.15s}
+.copy:hover{background:rgba(255,255,255,.14);color:var(--text)}
+.copy.ok{color:#5fe08a;border-color:rgba(95,224,138,.4)}
+pre{margin:0;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:13.2px;
+  line-height:1.72;color:#d7e0f2}
+pre .c{color:#6c7a96}
+pre .k{color:var(--amber)}
+pre .s{color:#8fe3b0}
+
+/* ---------- table ---------- */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:520px}
+th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:rgba(255,255,255,.04);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-faint);font-weight:700}
+td{color:var(--text-dim)}
+tr:last-child td{border-bottom:none}
+td code{font-family:var(--mono);font-size:.86em;color:var(--amber-soft)}
+
+/* ---------- note ---------- */
+.note{display:grid;grid-template-columns:auto 1fr;gap:14px;background:rgba(95,212,255,.06);
+  border:1px solid rgba(95,212,255,.22);border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.note .ic{font-size:17px;line-height:1.4}
+.note p{margin:0;font-size:.92rem;color:var(--text-dim)}
+.note.warn{background:rgba(255,179,71,.06);border-color:rgba(255,179,71,.24)}
+
+/* ---------- lightbox ---------- */
+.lb{position:fixed;inset:0;z-index:100;background:rgba(3,5,10,.93);display:none;
+  align-items:center;justify-content:center;padding:28px;cursor:zoom-out;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.lb.on{display:flex}
+.lb img{max-width:96vw;max-height:92vh;width:auto;border-radius:10px;background:#fff;
+  box-shadow:0 40px 110px -30px rgba(0,0,0,.95)}
+.lb-close{position:absolute;top:18px;right:24px;font-size:30px;color:#fff;opacity:.65;
+  background:none;border:none;cursor:pointer;line-height:1}
+.lb-close:hover{opacity:1}
+
+/* ---------- footer ---------- */
+footer{padding:46px 0 56px;border-top:1px solid var(--line);text-align:center;
+  color:var(--text-faint);font-size:.88rem}
+footer a{color:var(--text-dim)}
+.ack{font-size:.93rem;color:var(--text-dim)}
+.ack li{margin-bottom:7px}
+ul{padding-left:20px;color:var(--text-dim)}
+
+@media (max-width:860px){
+  .g3,.g2{grid-template-columns:minmax(0,1fr)}
+  .stage{grid-template-columns:1fr;gap:6px}
+  .stage .tag{padding-top:0}
+  header{padding:52px 0 42px}
+  section{padding:48px 0}
+  body{font-size:16px}
+  .brand{display:none}
+  .nav-links{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div class="sky"></div>
+<div class="stars"></div>
+
+<nav>
+  <div class="nav-in">
+    <a class="brand" href="#top">DNA<span>-</span>Diff</a>
+    <div class="nav-links">
+      <a href="#abstract">Abstract</a>
+      <a href="#results">Results</a>
+      <a href="#method">Method</a>
+      <a href="#diversity">Diversity</a>
+      <a href="#beyond">Beyond People</a>
+      <a href="#start">Get Started</a>
+      <a href="#cite">Citation</a>
+    </div>
+  </div>
+</nav>
+
+<header id="top">
+  <div class="wrap">
+    <div class="venue">● BMVC 2026 · Official Implementation</div>
+    <h1>DNA-Diff: <span class="grad">Day-to-Night</span><br>Adaptation via Diffusion</h1>
+    <p class="tagline">Lighting-Aware Diffusion-based Data Augmentation for<br>Robust Low-Light Re-Identification</p>
+
+    <!-- TODO: replace with the final author list and affiliations before camera-ready -->
+    <p class="authors">Authors to be announced</p>
+    <p class="affil">Paper under review · author list released with the camera-ready version</p>
+
+    <div class="btns">
+      <a class="btn disabled" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper <span class="soon">Soon</span></a>
+      <a class="btn primary" href="https://github.com/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.4 4.9 18.4 5.2 18.4 5.2c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>Code</a>
+      <a class="btn" href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">🤗 Weights</a>
+      <a class="btn" href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Generated Images</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section id="abstract">
+  <div class="wrap narrow">
+    <p class="eyebrow">Abstract</p>
+    <h2>Night-time ReID data, from daytime labels</h2>
+    <p>Person re-identification collapses at night: annotated data is overwhelmingly daytime, while
+    deployment is not. DNA-Diff closes that gap by <strong>turning labelled daytime ReID data into realistic
+    night-time training images</strong> — no paired day/night captures required.</p>
+    <p>We fine-tune Stable Diffusion v1.5 in three stages so that it can render a given identity, taken from a
+    daytime reference crop, under a <strong>specific night-time camera</strong> and a <strong>specific lighting
+    condition</strong>. Learned <strong>environment tokens</strong> — one per lighting group per camera —
+    give control over illumination, while an <strong>IP-Adapter</strong> conditioned on OSNet identity features
+    carries appearance over from the reference image rather than from a text token alone. The result is
+    synthetic night-time data that keeps identity intact across the full range of real low-light conditions,
+    and that can be dropped straight into an existing ReID training split.</p>
+  </div>
+</section>
+
+<section id="results">
+  <div class="wrap">
+    <p class="eyebrow">Qualitative Results</p>
+    <h2>Identity preserved, lighting transferred</h2>
+    <p class="narrow" style="margin-inline:0;max-width:800px">Market-1501 identities rendered under NightReID
+    lighting, against GAN- and diffusion-based day-to-night baselines. Prior methods either wash out the
+    illumination or drift away from the source identity; DNA-Diff holds both.</p>
+    <figure>
+      <div class="fig-card" data-zoom>
+        <img src="figures/qualitative_comparison.png" alt="Qualitative comparison of DNA-Diff against CycleGAN, eSPGAN, CycleGAN-Turbo and DiVE on Market-1501 identities rendered under NightReID lighting" loading="lazy">
+      </div>
+      <figcaption><b>Comparison with baselines.</b> Left: daytime source identities. Right: the real target
+      lighting. DNA-Diff matches the target illumination while keeping clothing, colour and accessories
+      recognisable.</figcaption>
+      <p class="zoomhint">Click any figure to enlarge</p>
+    </figure>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <p class="eyebrow">Method</p>
+    <h2>Three stages, each named for what it adds</h2>
+
+    <div class="grid g3" style="margin-bottom:34px">
+      <div class="card">
+        <div class="num">01</div>
+        <h3>Lighting- &amp; identity-aware base</h3>
+        <p>LoRA on the UNet plus a textual-inversion token per identity and per camera, so the model learns
+        both who is in the frame and which camera it came from.</p>
+      </div>
+      <div class="card cy">
+        <div class="num">02</div>
+        <h3>Environment tokens</h3>
+        <p>One learned token per lighting group per camera. Night-time crops are sorted by brightness into
+        ten environment groups per camera, giving explicit, dial-able illumination control.</p>
+      </div>
+      <div class="card vi">
+        <div class="num">03</div>
+        <h3>IP-Adapter identity</h3>
+        <p>Cross-attention conditioned on OSNet identity features, so appearance is carried over from a
+        reference image instead of only from a text token.</p>
+      </div>
+    </div>
+
+    <figure>
+      <div class="fig-card" data-zoom>
+        <img src="figures/pipeline.png" alt="DNA-Diff architecture: stage 1 pre-trains a lighting and identity aware text-to-image model, stage 2 adds environment tokens, stage 3 adds an IP-Adapter conditioned on an image encoder" loading="lazy">
+      </div>
+      <figcaption><b>Overview of the DNA-Diff architecture.</b> Each stage initialises from the previous one;
+      the text encoder is learnable in stages 1–2 and frozen in stage 3, where the IP-Adapter branch is
+      added.</figcaption>
+    </figure>
+
+    <div class="stages">
+      <div class="stage">
+        <div class="tag">Stage 1 · ILA</div>
+        <div>
+          <h3>Identity- and lighting-aware pre-training</h3>
+          <p>LoRA on the UNet plus a textual-inversion token per identity and per camera.</p>
+          <code class="file">Data_Generation/train_t2i_ila.py → finetune_stage1_ila/</code>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="tag">Stage 2 · EnvToken</div>
+        <div>
+          <h3>Environment tokens for lighting diversity</h3>
+          <p>One learned token per lighting group per camera, initialised from the stage-1 weights.</p>
+          <code class="file">Data_Generation/train_t2i_envtoken.py → finetune_stage2_envtoken/</code>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="tag">Stage 3 · IP-Adapter</div>
+        <div>
+          <h3>Identity preservation from a reference image</h3>
+          <p>IP-Adapter conditioning on OSNet identity features, adapted in <code class="inl">lora_ipadapter.py</code>.</p>
+          <code class="file">Data_Generation/train_t2i_ipadapter.py → finetune_stage3_ipadapter/</code>
+        </div>
+      </div>
+    </div>
+
+    <p style="margin-top:24px">At inference, <code class="inl">generate_t2i.py</code> takes daytime Market-1501
+    crops as identity references and generates night-time images for <strong>every camera / environment
+    combination</strong>, which can then be flattened into Market-1501 filename conventions and copied straight
+    into a NightReID training split.</p>
+  </div>
+</section>
+
+<section id="diversity">
+  <div class="wrap">
+    <p class="eyebrow">Illumination Diversity</p>
+    <h2>One identity, every lighting condition</h2>
+    <p style="max-width:800px">Because lighting is controlled by a discrete token rather than entangled with
+    identity, a single source identity can be re-rendered across the full span of learned night-time
+    environments — from near-dark to harsh streetlight glare — without the appearance collapsing into a
+    single averaged look.</p>
+    <figure>
+      <div class="fig-card" data-zoom>
+        <img src="figures/illumination_diversity.png" alt="A single source identity generated across four lighting environments by DiVE and by DNA-Diff, showing greater pose and illumination variety from DNA-Diff" loading="lazy">
+      </div>
+      <figcaption><b>DiVE (left) vs. DNA-Diff (right).</b> Same source identity, same four night-time
+      environments. DNA-Diff produces more varied poses and viewpoints while keeping the yellow shirt,
+      checked shorts and backpack consistent.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="beyond">
+  <div class="wrap">
+    <p class="eyebrow">Generalisation</p>
+    <h2>Beyond people: vehicle re-identification</h2>
+    <p style="max-width:800px">The method is not specific to pedestrians. Applied to <strong>VeRi-776</strong>,
+    the same recipe renders a source vehicle under night-time traffic lighting — headlights, tail-lights,
+    sodium-lamp colour casts — while preserving make, colour and viewpoint cues.</p>
+    <figure>
+      <div class="fig-card" data-zoom>
+        <img src="figures/vehicle_reid.png" alt="DNA-Diff applied to VeRi-776 vehicle re-identification: source daytime vehicles on the left, generated night-time renderings on the right" loading="lazy">
+      </div>
+      <figcaption><b>VeRi-776 identities under generated night-time lighting.</b> Licence plates are masked in
+      both the source and generated crops.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <p class="eyebrow">Get Started</p>
+    <h2>Generate in three steps</h2>
+    <p class="narrow" style="margin-inline:0;max-width:800px">You do not need to train anything. Released
+    weights cover all three stages — pull them, point the sampler at your daytime reference crops, and
+    generate. The full training recipe, data preparation and troubleshooting live in the
+    <a href="https://github.com/manhtoanbui01/DNA-Diff#readme" target="_blank" rel="noopener">repository
+    README</a>.</p>
+
+    <div class="grid g2" style="align-items:start;gap:20px;margin-top:26px">
+      <div>
+        <div class="code">
+          <div class="code-head"><span>1 · Environment</span><button class="copy">Copy</button></div>
+<pre><span class="c"># diffusers is pinned to 0.23.1 — later</span>
+<span class="c"># releases relocate the LoRA attn processors</span>
+git clone https://github.com/manhtoanbui01/DNA-Diff.git
+<span class="k">cd</span> DNA-Diff
+conda env create -f environment.yml
+conda activate dna-diff</pre>
+        </div>
+
+        <div class="code">
+          <div class="code-head"><span>2 · Base model + weights</span><button class="copy">Copy</button></div>
+<pre><span class="c"># Stable Diffusion v1.5 (scripts run --local_files_only)</span>
+huggingface-cli download \
+  stable-diffusion-v1-5/stable-diffusion-v1-5 \
+  --local-dir ./stable-diffusion-v1-5
+
+<span class="c"># released DNA-Diff weights (1.86 GB)</span>
+<span class="k">cd</span> dataset/NightReID_Market1501/
+wget https://huggingface.co/manhtoanbui01/DNA-Diff/resolve/main/finetune_model.tar.gz
+tar -xzf finetune_model.tar.gz</pre>
+        </div>
+      </div>
+
+      <div>
+        <div class="code">
+          <div class="code-head"><span>3 · Generate</span><button class="copy">Copy</button></div>
+<pre><span class="k">cd</span> Data_Generation
+<span class="k">source</span> scripts/sample.sh
+sample \
+  /abs/path/to/dataset/NightReID_Market1501/ \
+  /abs/path/to/dataset/NightReID_Market1501/cam7/env61/ \
+  /abs/path/to/stable-diffusion-v1-5 \
+  /abs/path/to/output_dir \
+  10 512 <span class="s">true</span>
+<span class="c">#          ^^^^ use_pretrained_weights</span></pre>
+        </div>
+
+        <div class="note warn">
+          <div class="ic">⚠️</div>
+          <p>Pass <code class="inl">true</code> as the 7th argument when using the <em>released</em> weights —
+          it selects the per-camera token counts those weights were trained with. Use
+          <code class="inl">false</code> for weights you trained yourself.</p>
+        </div>
+
+        <div class="note">
+          <div class="ic">💡</div>
+          <p>Don't want to run generation at all? The
+          <a href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">generated
+          images (260&nbsp;MB)</a> are released too — export them into a Market-1501-style training split with
+          <code class="inl">move_synthetic_market1501.py</code> and train your ReID model directly.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin:34px 0 14px;font-size:1.25rem">What ships with the release</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Artefact</th><th>Size</th><th>What it is</th></tr></thead>
+        <tbody>
+          <tr><td><code>learned_embeds-steps-100000.bin</code></td><td>6.2 MB</td><td>Identity token embeddings (stage 1)</td></tr>
+          <tr><td><code>learned_embeds-steps-40000.bin</code></td><td>540 KB</td><td>Environment / lighting token embeddings (stage 2)</td></tr>
+          <tr><td><code>model.safetensors</code></td><td>171 MB</td><td>UNet LoRA + IP-Adapter attention (stage 3)</td></tr>
+          <tr><td><code>model_1.safetensors</code></td><td>6.1 MB</td><td>OSNet → IP-Adapter projection (stage 3)</td></tr>
+          <tr><td><code>generated_images.tar.gz</code></td><td>260 MB</td><td>Pre-generated synthetic night-time dataset</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:.9rem;color:var(--text-faint)">Inference also needs the base SD-1.5 checkpoint and the
+    <code class="inl">osnet_ain_x1_0</code> (MS+D+M→C) ReID backbone. Requirements: Linux x86_64, an NVIDIA GPU
+    with a CUDA 12.1-capable driver, and roughly 80 GB of free disk for data, checkpoints and output.</p>
+  </div>
+</section>
+
+<section id="cite">
+  <div class="wrap narrow">
+    <p class="eyebrow">Citation</p>
+    <h2>BibTeX</h2>
+    <div class="code">
+      <div class="code-head"><span>bibtex</span><button class="copy">Copy</button></div>
+<pre>@inproceedings{dnadiff2026,
+  title     = {Lighting-Aware Diffusion-based Data Augmentation
+               for Robust Low-Light Re-Identification},
+  author    = {TBA},
+  booktitle = {British Machine Vision Conference (BMVC)},
+  year      = {2026}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<section id="ack">
+  <div class="wrap narrow">
+    <p class="eyebrow">Acknowledgements</p>
+    <h2>Built on open source</h2>
+    <ul class="ack">
+      <li><a href="https://github.com/BorgDiven/DiVE" target="_blank" rel="noopener"><strong>DiVE</strong></a> — the codebase this implementation builds on, and the main baseline above</li>
+      <li><a href="https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-v1-5" target="_blank" rel="noopener"><strong>Stable Diffusion v1.5</strong></a> and <a href="https://github.com/huggingface/diffusers" target="_blank" rel="noopener"><strong>diffusers</strong></a> — the text-to-image backbone</li>
+      <li><a href="https://github.com/KaiyangZhou/deep-person-reid" target="_blank" rel="noopener"><strong>deep-person-reid</strong></a> — OSNet identity features</li>
+      <li><a href="https://github.com/tencent-ailab/IP-Adapter" target="_blank" rel="noopener"><strong>IP-Adapter</strong></a> — image-prompt cross-attention</li>
+      <li><a href="https://github.com/msm8976/NightReID" target="_blank" rel="noopener"><strong>NightReID</strong></a>, <a href="https://zheng-lab-anu.github.io/Project/project_reid.html" target="_blank" rel="noopener"><strong>Market-1501</strong></a> and <strong>VeRi-776</strong> — datasets</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p style="margin-bottom:8px">DNA-Diff · BMVC 2026 ·
+      <a href="https://github.com/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">Hugging Face</a>
+    </p>
+    <p style="font-size:.82rem;opacity:.75;margin:0">Page template released under the
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+      licence. Generated imagery is for research use only.</p>
+  </div>
+</footer>
+
+<div class="lb" id="lb">
+  <button class="lb-close" aria-label="Close">&times;</button>
+  <img src="" alt="">
+</div>
+
+<script>
+// copy buttons
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var pre = btn.closest('.code').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText).then(function(){
+      var old = btn.textContent;
+      btn.textContent = 'Copied'; btn.classList.add('ok');
+      setTimeout(function(){ btn.textContent = old; btn.classList.remove('ok'); }, 1600);
+    });
+  });
+});
+
+// lightbox
+var lb = document.getElementById('lb'), lbImg = lb.querySelector('img');
+document.querySelectorAll('[data-zoom]').forEach(function(card){
+  card.addEventListener('click', function(){
+    var img = card.querySelector('img');
+    lbImg.src = img.src; lbImg.alt = img.alt;
+    lb.classList.add('on'); document.body.style.overflow = 'hidden';
+  });
+});
+function closeLb(){ lb.classList.remove('on'); document.body.style.overflow = ''; }
+lb.addEventListener('click', closeLb);
+document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLb(); });
+</script>
+</body>
+</html>
