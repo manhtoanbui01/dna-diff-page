@@ -4,7 +4,9 @@
 
 ### Lighting-Aware Diffusion-based Data Augmentation for<br>Robust Low-Light Re-Identification
 
-**BMVC 2026** · Official implementation
+**Accepted at BMVC 2026** · Official implementation
+
+Toan Manh Bui · Donghyeok Min · Inyoung Oh · Junghyun Cho
 
 [![Project Page](https://img.shields.io/badge/Project-Page-0b7285?style=flat-square)](https://manhtoanbui01.github.io/dna-diff-page/)
 [![Paper](https://img.shields.io/badge/Paper-TBA-b31b1b?style=flat-square)](TBA)
@@ -624,7 +626,7 @@ If you find this work useful, please cite:
 ```bibtex
 @inproceedings{dnadiff2026,
   title     = {Lighting-Aware Diffusion-based Data Augmentation for Robust Low-Light Re-Identification},
-  author    = {TBA},
+  author    = {Bui, Toan Manh and Min, Donghyeok and Oh, Inyoung and Cho, Junghyun},
   booktitle = {British Machine Vision Conference (BMVC)},
   year      = {2026}
 }

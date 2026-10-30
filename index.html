@@ -104,8 +104,48 @@ a:hover{text-decoration:underline}
   -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 78%);
   animation:twinkle2 4.5s ease-in-out infinite alternate;
 }
-@keyframes twinkle{from{opacity:.34}to{opacity:.66}}
+/* tiled micro-stars: a small set repeated to give real depth without 200 gradients */
+.stars-far{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.42;
+  background-size:43% 37%;background-repeat:repeat;
+  background-image:
+    radial-gradient(.9px .9px at 7% 21%, #dce8ff, transparent),
+    radial-gradient(.8px .8px at 21% 9%, #fff, transparent),
+    radial-gradient(1px 1px at 34% 44%, #fff, transparent),
+    radial-gradient(.8px .8px at 48% 17%, #cfe3ff, transparent),
+    radial-gradient(.9px .9px at 59% 63%, #fff, transparent),
+    radial-gradient(.8px .8px at 72% 28%, #ffeccd, transparent),
+    radial-gradient(1px 1px at 83% 54%, #fff, transparent),
+    radial-gradient(.8px .8px at 92% 12%, #dce8ff, transparent),
+    radial-gradient(.9px .9px at 14% 72%, #fff, transparent),
+    radial-gradient(.8px .8px at 64% 86%, #cfe3ff, transparent);
+  mask-image:linear-gradient(180deg,#000 0%,#000 58%,rgba(0,0,0,.3) 84%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 58%,rgba(0,0,0,.3) 84%,transparent 100%);
+  animation:twinkle3 11s ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.38}to{opacity:.72}}
 @keyframes twinkle2{from{opacity:.45}to{opacity:1}}
+@keyframes twinkle3{from{opacity:.26}to{opacity:.5}}
+
+/* ---------- hero atmosphere: clouds + shooting stars ---------- */
+.nightfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.cloud{position:absolute;border-radius:50%;filter:blur(30px);
+  background:rgba(126,158,214,.085);animation:drift linear infinite}
+.cloud.warm{background:rgba(255,186,110,.06)}
+@keyframes drift{from{transform:translateX(-18vw)}to{transform:translateX(118vw)}}
+
+.shoot{position:absolute;width:130px;height:1.6px;border-radius:2px;opacity:0;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(214,234,255,.55),rgba(255,255,255,.95));
+  box-shadow:0 0 7px rgba(190,220,255,.55);
+  animation:shoot 17s ease-in infinite}
+.shoot::after{content:"";position:absolute;right:-2px;top:-1.6px;width:4.6px;height:4.6px;
+  border-radius:50%;background:#fff;box-shadow:0 0 11px 3px rgba(200,225,255,.75)}
+@keyframes shoot{
+  0%  {opacity:0;transform:translate3d(0,0,0) rotate(17deg)}
+  2%  {opacity:0}
+  5%  {opacity:1}
+  16% {opacity:0;transform:translate3d(62vw,21vh,0) rotate(17deg)}
+  100%{opacity:0;transform:translate3d(62vw,21vh,0) rotate(17deg)}
+}
 
 /* ---------- moon ---------- */
 .moon{position:absolute;top:30px;right:7%;width:108px;height:108px;border-radius:50%;
@@ -141,7 +181,8 @@ nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop
 .nav-links a:hover{color:var(--amber);text-decoration:none}
 
 /* ---------- hero ---------- */
-header{padding:76px 0 56px;text-align:center;position:relative}
+header{padding:76px 0 56px;text-align:center;position:relative;overflow:hidden}
+header .wrap{position:relative;z-index:1}
 .venue{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;
   letter-spacing:.14em;text-transform:uppercase;color:var(--amber);
   border:1px solid rgba(255,179,71,.34);background:rgba(255,179,71,.08);
@@ -152,7 +193,11 @@ h1 .grad{background:linear-gradient(100deg,var(--amber) 0%,var(--amber-soft) 38%
   -webkit-background-clip:text;background-clip:text;color:transparent}
 .tagline{font-size:clamp(1.05rem,2.3vw,1.4rem);color:var(--text-dim);max-width:780px;
   margin:0 auto 30px;line-height:1.45;font-weight:400}
-.authors{font-size:1.02rem;color:var(--text);margin:0 0 6px}
+.authors{font-size:1.08rem;color:var(--text);margin:0 0 8px;line-height:1.9}
+.authors .au{color:var(--text);font-weight:500;white-space:nowrap}
+.authors a.au{border-bottom:1px solid rgba(255,179,71,.38);transition:.15s}
+.authors a.au:hover{color:var(--amber);border-bottom-color:var(--amber);text-decoration:none}
+.authors .sep{color:var(--text-faint);margin:0 11px}
 .affil{font-size:.93rem;color:var(--text-faint);margin:0 0 32px}
 
 .btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:10px}
@@ -305,6 +350,7 @@ ul{padding-left:20px;color:var(--text-dim)}
 </head>
 <body>
 <div class="sky"></div>
+<div class="stars-far"></div>
 <div class="stars"></div>
 <div class="stars-bright"></div>
 
@@ -324,15 +370,24 @@ ul{padding-left:20px;color:var(--text-dim)}
 </nav>
 
 <header id="top">
+  <div class="nightfx" aria-hidden="true">
+    <div class="cloud"      style="top:14%;left:-14%;width:460px;height:70px;animation-duration:96s"></div>
+    <div class="cloud warm" style="top:38%;left:-20%;width:620px;height:84px;animation-duration:138s;animation-delay:-40s"></div>
+    <div class="cloud"      style="top:63%;left:-16%;width:380px;height:56px;animation-duration:112s;animation-delay:-70s"></div>
+    <div class="shoot" style="top:11%;left:-12%"></div>
+    <div class="shoot" style="top:5%;left:18%;animation-delay:-9s;animation-duration:23s"></div>
+  </div>
   <div class="moon" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="venue">● BMVC 2026 · Official Implementation</div>
+    <div class="venue">✦ Accepted at BMVC 2026</div>
     <h1>DNA-Diff: <span class="grad">Day-to-Night</span><br>Adaptation via Diffusion</h1>
     <p class="tagline">Lighting-Aware Diffusion-based Data Augmentation for<br>Robust Low-Light Re-Identification</p>
 
-    <!-- TODO: replace with the final author list and affiliations before camera-ready -->
-    <p class="authors">Authors to be announced</p>
-    <p class="affil">Paper under review · author list released with the camera-ready version</p>
+    <!-- TODO: add affiliation markers + personal/Scholar links if you want them -->
+    <p class="authors">
+      <a class="au" href="https://github.com/manhtoanbui01" target="_blank" rel="noopener">Toan Manh Bui</a><span class="sep">·</span><span class="au">Donghyeok Min</span><span class="sep">·</span><span class="au">Inyoung Oh</span><span class="sep">·</span><span class="au">Junghyun Cho</span>
+    </p>
+    <p class="affil">British Machine Vision Conference (BMVC) 2026</p>
 
     <div class="btns">
       <a class="btn disabled" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper <span class="soon">Soon</span></a>
@@ -581,7 +636,8 @@ sample \
 <pre>@inproceedings{dnadiff2026,
   title     = {Lighting-Aware Diffusion-based Data Augmentation
                for Robust Low-Light Re-Identification},
-  author    = {TBA},
+  author    = {Bui, Toan Manh and Min, Donghyeok and
+               Oh, Inyoung and Cho, Junghyun},
   booktitle = {British Machine Vision Conference (BMVC)},
   year      = {2026}
 }</pre>
