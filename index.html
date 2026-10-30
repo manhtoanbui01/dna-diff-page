@@ -60,25 +60,78 @@ a:hover{text-decoration:underline}
   radial-gradient(900px 560px at 10% 4%, rgba(95,212,255,.12), transparent 60%),
   linear-gradient(180deg,#0a1226 0%, #070b14 46%, #05070e 100%);
 }
-.stars{position:fixed;inset:0;z-index:-1;opacity:.5;pointer-events:none;
+/* dense faint field — covers the whole page, fades out near the city glow */
+.stars{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;
+  background-repeat:repeat;background-size:100% 100%;
   background-image:
-    radial-gradient(1.4px 1.4px at 12% 18%, #fff, transparent),
-    radial-gradient(1.2px 1.2px at 28% 42%, #cfe3ff, transparent),
-    radial-gradient(1.6px 1.6px at 46% 12%, #fff, transparent),
-    radial-gradient(1.1px 1.1px at 63% 33%, #ffe9c7, transparent),
-    radial-gradient(1.3px 1.3px at 81% 20%, #fff, transparent),
-    radial-gradient(1.1px 1.1px at 91% 47%, #cfe3ff, transparent),
-    radial-gradient(1.2px 1.2px at 36% 66%, #fff, transparent),
-    radial-gradient(1px 1px at 70% 72%, #fff, transparent);
-  mask-image:linear-gradient(180deg,#000 0%,#000 32%,transparent 70%);
-  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 32%,transparent 70%);
+    radial-gradient(1.2px 1.2px at 4% 11%, #fff, transparent),
+    radial-gradient(1px 1px at 9% 36%, #cfe3ff, transparent),
+    radial-gradient(1.4px 1.4px at 14% 19%, #fff, transparent),
+    radial-gradient(1px 1px at 19% 58%, #e8f1ff, transparent),
+    radial-gradient(1.1px 1.1px at 23% 8%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 28% 43%, #cfe3ff, transparent),
+    radial-gradient(1px 1px at 33% 26%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 38% 67%, #fff, transparent),
+    radial-gradient(1px 1px at 43% 14%, #ffe9c7, transparent),
+    radial-gradient(1.5px 1.5px at 47% 33%, #fff, transparent),
+    radial-gradient(1px 1px at 52% 52%, #cfe3ff, transparent),
+    radial-gradient(1.1px 1.1px at 57% 21%, #fff, transparent),
+    radial-gradient(1.3px 1.3px at 62% 40%, #fff, transparent),
+    radial-gradient(1px 1px at 66% 9%, #e8f1ff, transparent),
+    radial-gradient(1.2px 1.2px at 71% 62%, #fff, transparent),
+    radial-gradient(1px 1px at 76% 29%, #ffe9c7, transparent),
+    radial-gradient(1.4px 1.4px at 81% 16%, #fff, transparent),
+    radial-gradient(1px 1px at 86% 49%, #cfe3ff, transparent),
+    radial-gradient(1.2px 1.2px at 91% 24%, #fff, transparent),
+    radial-gradient(1px 1px at 96% 57%, #fff, transparent),
+    radial-gradient(1.1px 1.1px at 6% 72%, #cfe3ff, transparent),
+    radial-gradient(1px 1px at 31% 84%, #fff, transparent),
+    radial-gradient(1.2px 1.2px at 58% 77%, #e8f1ff, transparent),
+    radial-gradient(1px 1px at 84% 81%, #fff, transparent);
+  mask-image:linear-gradient(180deg,#000 0%,#000 62%,rgba(0,0,0,.35) 86%,transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 62%,rgba(0,0,0,.35) 86%,transparent 100%);
   animation:twinkle 7s ease-in-out infinite alternate;
 }
-@keyframes twinkle{from{opacity:.32}to{opacity:.62}}
+/* a few brighter stars with a cross-glint, breathing on a different cycle */
+.stars-bright{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.9;
+  background-image:
+    radial-gradient(2px 2px at 17% 23%, #fff, transparent),
+    radial-gradient(2.2px 2.2px at 41% 11%, #fff6e2, transparent),
+    radial-gradient(2px 2px at 64% 31%, #fff, transparent),
+    radial-gradient(1.9px 1.9px at 88% 14%, #e9f3ff, transparent),
+    radial-gradient(2.1px 2.1px at 9% 47%, #fff, transparent);
+  mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 78%);
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 45%,transparent 78%);
+  animation:twinkle2 4.5s ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.34}to{opacity:.66}}
+@keyframes twinkle2{from{opacity:.45}to{opacity:1}}
+
+/* ---------- moon ---------- */
+.moon{position:absolute;top:30px;right:7%;width:108px;height:108px;border-radius:50%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 68% 74%, rgba(168,134,82,.30) 0 6.5%, transparent 7.5%),
+    radial-gradient(circle at 38% 62%, rgba(168,134,82,.26) 0 4.5%, transparent 5.5%),
+    radial-gradient(circle at 57% 36%, rgba(168,134,82,.20) 0 3.5%, transparent 4.5%),
+    radial-gradient(circle at 26% 46%, rgba(168,134,82,.18) 0 2.5%, transparent 3.5%),
+    radial-gradient(circle at 36% 32%, #fffdf5 0%, #ffeecb 42%, #f8dda8 70%, #ecc983 100%);
+  box-shadow:
+    0 0 52px 12px rgba(255,214,150,.22),
+    0 0 160px 54px rgba(255,186,96,.10),
+    inset -13px -11px 28px rgba(140,104,54,.32);
+  animation:moonbreathe 11s ease-in-out infinite alternate;
+}
+.moon::after{content:"";position:absolute;inset:-54px;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle,rgba(255,206,130,.15) 0%,rgba(255,186,96,.05) 45%,transparent 68%)}
+@keyframes moonbreathe{
+  from{box-shadow:0 0 44px 10px rgba(255,214,150,.18),0 0 140px 46px rgba(255,186,96,.08),inset -13px -11px 28px rgba(140,104,54,.32)}
+  to  {box-shadow:0 0 64px 16px rgba(255,214,150,.28),0 0 190px 62px rgba(255,186,96,.13),inset -13px -11px 28px rgba(140,104,54,.32)}
+}
 
 /* ---------- nav ---------- */
 nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  background:rgba(7,11,20,.72);border-bottom:1px solid var(--line)}
+  background:rgba(7,11,20,.66);box-shadow:0 10px 30px -22px rgba(0,0,0,.9)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:20px}
 .brand{font-weight:700;letter-spacing:-.02em;color:var(--text);font-size:16px;white-space:nowrap}
 .brand span{color:var(--amber)}
@@ -117,8 +170,7 @@ h1 .grad{background:linear-gradient(100deg,var(--amber) 0%,var(--amber-soft) 38%
   background:rgba(255,255,255,.14);padding:2px 7px;border-radius:5px}
 
 /* ---------- sections ---------- */
-section{padding:62px 0;border-top:1px solid var(--line)}
-section:first-of-type{border-top:none}
+section{padding:70px 0}
 .eyebrow{font-size:12px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;
   color:var(--amber);margin:0 0 10px}
 h2{font-family:var(--serif);font-size:clamp(1.7rem,3.6vw,2.4rem);margin:0 0 20px;
@@ -212,9 +264,22 @@ td code{font-family:var(--mono);font-size:.86em;color:var(--amber-soft)}
   background:none;border:none;cursor:pointer;line-height:1}
 .lb-close:hover{opacity:1}
 
+/* ---------- city skyline ---------- */
+.cityscape{position:relative;margin-top:40px;line-height:0;pointer-events:none;
+  filter:drop-shadow(0 -26px 50px rgba(255,170,80,.07))}
+.cityscape svg{display:block;width:100%;height:clamp(150px,19vw,250px)}
+.cityscape .blink{animation:blink 2.6s steps(1,end) infinite}
+.cityscape .blink.b2{animation-duration:3.4s;animation-delay:.9s}
+.cityscape .lit{animation:lit 5.5s ease-in-out infinite alternate}
+.cityscape .lit.l2{animation-duration:7.5s;animation-delay:1.4s}
+.cityscape .lit.l3{animation-duration:4.2s;animation-delay:2.6s}
+@keyframes blink{0%,45%{opacity:1}46%,100%{opacity:.05}}
+@keyframes lit{from{opacity:.35}to{opacity:.95}}
+
 /* ---------- footer ---------- */
-footer{padding:46px 0 56px;border-top:1px solid var(--line);text-align:center;
-  color:var(--text-faint);font-size:.88rem}
+footer{padding:30px 0 54px;text-align:center;position:relative;z-index:2;
+  color:var(--text-faint);font-size:.88rem;
+  background:linear-gradient(180deg,#05080f 0%,#04060c 40%,#03050a 100%)}
 footer a{color:var(--text-dim)}
 .ack{font-size:.93rem;color:var(--text-dim)}
 .ack li{margin-bottom:7px}
@@ -224,7 +289,9 @@ ul{padding-left:20px;color:var(--text-dim)}
   .g3,.g2{grid-template-columns:minmax(0,1fr)}
   .stage{grid-template-columns:1fr;gap:6px}
   .stage .tag{padding-top:0}
-  header{padding:52px 0 42px}
+  header{padding:96px 0 42px}
+  .moon{width:58px;height:58px;top:14px;right:7%}
+  .moon::after{inset:-28px}
   section{padding:48px 0}
   body{font-size:16px}
   .brand{display:none}
@@ -239,6 +306,7 @@ ul{padding-left:20px;color:var(--text-dim)}
 <body>
 <div class="sky"></div>
 <div class="stars"></div>
+<div class="stars-bright"></div>
 
 <nav>
   <div class="nav-in">
@@ -256,6 +324,7 @@ ul{padding-left:20px;color:var(--text-dim)}
 </nav>
 
 <header id="top">
+  <div class="moon" aria-hidden="true"></div>
   <div class="wrap">
     <div class="venue">● BMVC 2026 · Official Implementation</div>
     <h1>DNA-Diff: <span class="grad">Day-to-Night</span><br>Adaptation via Diffusion</h1>
@@ -535,6 +604,115 @@ sample \
 </section>
 
 </main>
+
+<div class="cityscape" aria-hidden="true">
+<svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- lit window grids -->
+    <pattern id="winFar" width="17" height="23" patternUnits="userSpaceOnUse">
+      <rect x="4" y="6" width="6" height="8" fill="#ffc46b" opacity=".20"/>
+    </pattern>
+    <pattern id="winNear" width="21" height="27" patternUnits="userSpaceOnUse">
+      <rect x="6" y="8" width="7" height="9" fill="#ffd08a" opacity=".13"/>
+    </pattern>
+    <linearGradient id="haze" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%"   stop-color="#ffa63c" stop-opacity=".20"/>
+      <stop offset="38%"  stop-color="#ff9a3c" stop-opacity=".07"/>
+      <stop offset="100%" stop-color="#ff9a3c" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="pool">
+      <stop offset="0%"   stop-color="#ffc46b" stop-opacity=".30"/>
+      <stop offset="100%" stop-color="#ffb347" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- distant row -->
+    <g id="far">
+      <rect x="0"    y="140" width="90"  height="120"/>
+      <rect x="96"   y="90"  width="64"  height="170"/>
+      <rect x="168"  y="164" width="110" height="96"/>
+      <rect x="286"  y="118" width="78"  height="142"/>
+      <rect x="372"  y="72"  width="56"  height="188"/>
+      <rect x="436"  y="150" width="120" height="110"/>
+      <rect x="564"  y="100" width="70"  height="160"/>
+      <rect x="642"  y="134" width="96"  height="126"/>
+      <rect x="746"  y="64"  width="58"  height="196"/>
+      <rect x="812"  y="142" width="104" height="118"/>
+      <rect x="924"  y="110" width="76"  height="150"/>
+      <rect x="1008" y="160" width="112" height="100"/>
+      <rect x="1128" y="82"  width="62"  height="178"/>
+      <rect x="1198" y="130" width="98"  height="130"/>
+      <rect x="1304" y="152" width="136" height="108"/>
+    </g>
+
+    <!-- near row -->
+    <g id="near">
+      <rect x="-20"  y="168" width="150" height="92"/>
+      <rect x="140"  y="186" width="96"  height="74"/>
+      <rect x="244"  y="156" width="130" height="104"/>
+      <rect x="382"  y="180" width="88"  height="80"/>
+      <rect x="478"  y="164" width="140" height="96"/>
+      <rect x="626"  y="188" width="104" height="72"/>
+      <rect x="738"  y="150" width="120" height="110"/>
+      <rect x="866"  y="182" width="92"  height="78"/>
+      <rect x="966"  y="168" width="148" height="92"/>
+      <rect x="1122" y="190" width="100" height="70"/>
+      <rect x="1230" y="160" width="118" height="100"/>
+      <rect x="1356" y="176" width="104" height="84"/>
+    </g>
+  </defs>
+
+  <!-- warm light pollution rising off the city -->
+  <rect x="0" y="30" width="1440" height="230" fill="url(#haze)"/>
+  <!-- street-level glow, behind the near row so it reads as depth -->
+  <ellipse cx="230"  cy="236" rx="150" ry="30" fill="url(#pool)"/>
+  <ellipse cx="640"  cy="240" rx="180" ry="32" fill="url(#pool)"/>
+  <ellipse cx="1020" cy="234" rx="140" ry="28" fill="url(#pool)"/>
+  <ellipse cx="1340" cy="240" rx="150" ry="30" fill="url(#pool)"/>
+
+  <!-- antenna masts with aircraft-warning lights -->
+  <g stroke="#0a1322" stroke-width="2">
+    <line x1="400" y1="72" x2="400" y2="38"/>
+    <line x1="775" y1="64" x2="775" y2="24"/>
+    <line x1="1159" y1="82" x2="1159" y2="52"/>
+  </g>
+  <circle class="blink"    cx="400"  cy="36" r="2.6" fill="#ff5f5f"/>
+  <circle class="blink b2" cx="775"  cy="22" r="2.6" fill="#ff5f5f"/>
+  <circle class="blink"    cx="1159" cy="50" r="2.2" fill="#ff5f5f" style="animation-delay:1.7s"/>
+
+  <use href="#far" fill="#0b1526"/>
+  <use href="#far" fill="url(#winFar)"/>
+  <use href="#far" fill="none" stroke="#9fc0ee" stroke-opacity=".07" stroke-width="1"/>
+  <use href="#near" fill="#05080f"/>
+  <use href="#near" fill="url(#winNear)"/>
+  <!-- city glow catching the near rooftops, so the silhouettes separate -->
+  <use href="#near" fill="none" stroke="#ffbe78" stroke-opacity=".11" stroke-width="1"/>
+
+  <!-- a handful of windows that flicker on their own -->
+  <g fill="#ffcf85">
+    <rect class="lit"    x="110" y="118" width="7" height="9"/>
+    <rect class="lit l2" x="131" y="164" width="7" height="9"/>
+    <rect class="lit l3" x="389" y="122" width="7" height="9"/>
+    <rect class="lit"    x="410" y="196" width="7" height="9"/>
+    <rect class="lit l2" x="581" y="148" width="7" height="9"/>
+    <rect class="lit l3" x="762" y="110" width="7" height="9"/>
+    <rect class="lit"    x="783" y="178" width="7" height="9"/>
+    <rect class="lit l2" x="941" y="156" width="7" height="9"/>
+    <rect class="lit l3" x="1145" y="128" width="7" height="9"/>
+    <rect class="lit"    x="1253" y="192" width="7" height="9"/>
+    <rect class="lit l2" x="1319" y="204" width="7" height="9"/>
+  </g>
+
+  <!-- rooftop clutter: tanks, stair huts, a spire -->
+  <g fill="#04070e">
+    <rect x="276" y="146" width="26" height="12"/>
+    <rect x="516" y="154" width="34" height="11"/>
+    <rect x="774" y="140" width="22" height="12"/>
+    <rect x="998" y="158" width="30" height="11"/>
+    <rect x="1262" y="150" width="24" height="12"/>
+  </g>
+  <path d="M1086 168 l10 -26 l10 26 z" fill="#05080f"/>
+</svg>
+</div>
 
 <footer>
   <div class="wrap">
