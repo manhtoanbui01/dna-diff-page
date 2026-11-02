@@ -127,7 +127,9 @@ a:hover{text-decoration:underline}
 @keyframes twinkle3{from{opacity:.26}to{opacity:.5}}
 
 /* ---------- hero atmosphere: clouds + shooting stars ---------- */
-.nightfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+/* z-index -1 so the comet sits under the moon, while the moon itself stays
+   under .wrap (z-index 1) and can never cover the headline */
+.nightfx{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:-1}
 .cloud{position:absolute;border-radius:50%;filter:blur(30px);
   background:rgba(126,158,214,.085);animation:drift linear infinite}
 .cloud.warm{background:rgba(255,186,110,.06)}
@@ -358,7 +360,7 @@ footer a{color:var(--text-dim)}
 ul{padding-left:20px;color:var(--text-dim)}
 
 /* between tablet and desktop the headline grows toward the moon, so pull it in */
-@media (max-width:1140px) and (min-width:861px){
+@media (max-width:1220px) and (min-width:861px){
   .moon{width:120px;height:120px;top:18px;right:5%}
   .moon::after{inset:-48px}
 }
