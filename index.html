@@ -319,7 +319,10 @@ td code{font-family:var(--mono);font-size:.86em;color:var(--amber-soft)}
 /* ---------- city skyline ---------- */
 .cityscape{position:relative;margin-top:40px;line-height:0;pointer-events:none;
   filter:drop-shadow(0 -26px 50px rgba(255,170,80,.07))}
-.cityscape svg{display:block;width:100%;height:clamp(150px,19vw,250px)}
+/* Height must stay >= width/5.54 (the viewBox aspect), or `slice` crops the
+   building tops off instead of the sides. 18.5vw keeps us just under that
+   ratio at every width, so only the sides are ever trimmed. */
+.cityscape svg{display:block;width:100%;height:max(150px,18.5vw)}
 .cityscape .blink{animation:blink 2.6s steps(1,end) infinite}
 .cityscape .blink.b2{animation-duration:3.4s;animation-delay:.9s}
 .cityscape .lit{animation:lit 5.5s ease-in-out infinite alternate}
