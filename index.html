@@ -178,19 +178,19 @@ a:hover{text-decoration:underline}
 .moon{position:absolute;top:24px;right:6%;width:196px;height:196px;border-radius:50%;
   pointer-events:none;
   box-shadow:
-    0 0 60px 14px rgba(226,238,255,.15),
-    0 0 180px 62px rgba(206,228,255,.065);
+    0 0 62px 14px rgba(255,224,140,.20),
+    0 0 190px 64px rgba(255,200,90,.09);
   animation:moonbreathe 11s ease-in-out infinite alternate;
 }
 .moon svg{display:block;width:100%;height:100%}
 /* atmospheric halo: tight cool bloom fading into a faint warm outer ring */
 .moon::after{content:"";position:absolute;inset:-78px;border-radius:50%;z-index:-1;
   background:radial-gradient(circle,
-    rgba(228,240,255,.15) 0%,rgba(214,232,255,.075) 34%,
-    rgba(255,214,150,.03) 56%,transparent 74%)}
+    rgba(255,232,160,.18) 0%,rgba(255,214,120,.09) 34%,
+    rgba(255,190,80,.035) 56%,transparent 74%)}
 @keyframes moonbreathe{
-  from{box-shadow:0 0 50px 12px rgba(226,238,255,.12),0 0 155px 54px rgba(206,228,255,.05)}
-  to  {box-shadow:0 0 72px 18px rgba(226,238,255,.19),0 0 205px 70px rgba(206,228,255,.09)}
+  from{box-shadow:0 0 52px 12px rgba(255,224,140,.16),0 0 165px 56px rgba(255,200,90,.07)}
+  to  {box-shadow:0 0 74px 18px rgba(255,224,140,.25),0 0 215px 72px rgba(255,200,90,.12)}
 }
 
 /* ---------- nav ---------- */
@@ -412,26 +412,19 @@ ul{padding-left:20px;color:var(--text-dim)}
   <div class="moon" aria-hidden="true">
   <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <defs>
-      <radialGradient id="mSphere" cx="38%" cy="33%" r="76%">
-        <stop offset="0"    stop-color="#fafbfc"/>
-        <stop offset=".32"  stop-color="#eceef1"/>
-        <stop offset=".60"  stop-color="#d4d8de"/>
-        <stop offset=".83"  stop-color="#b4bac3"/>
-        <stop offset="1"    stop-color="#8f959f"/>
+      <radialGradient id="mSphere" cx="39%" cy="34%" r="78%">
+        <stop offset="0"   stop-color="#fffdf0"/>
+        <stop offset=".34" stop-color="#ffeeb4"/>
+        <stop offset=".64" stop-color="#ffdd80"/>
+        <stop offset=".86" stop-color="#f3c859"/>
+        <stop offset="1"   stop-color="#e0ae3d"/>
       </radialGradient>
-      <radialGradient id="mLimb" cx="38%" cy="33%" r="104%">
-        <stop offset=".46" stop-color="#0b1220" stop-opacity="0"/>
-        <stop offset=".78" stop-color="#0b1220" stop-opacity=".10"/>
-        <stop offset="1"   stop-color="#0b1220" stop-opacity=".30"/>
+      <radialGradient id="mLimb" cx="39%" cy="34%" r="104%">
+        <stop offset=".58" stop-color="#6b4408" stop-opacity="0"/>
+        <stop offset="1"   stop-color="#6b4408" stop-opacity=".20"/>
       </radialGradient>
-      <filter id="mSoft" x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation="1.8"/>
-      </filter>
-      <filter id="mSoft2" x="-30%" y="-30%" width="160%" height="160%">
-        <feGaussianBlur stdDeviation="1.1"/>
-      </filter>
       <filter id="mGrain" x="0" y="0" width="100%" height="100%">
-        <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="4" seed="7"/>
+        <feTurbulence type="fractalNoise" baseFrequency=".95" numOctaves="3" seed="7"/>
         <feColorMatrix type="saturate" values="0"/>
       </filter>
       <clipPath id="mClip"><circle cx="100" cy="100" r="100"/></clipPath>
@@ -440,47 +433,21 @@ ul{padding-left:20px;color:var(--text-dim)}
     <g clip-path="url(#mClip)">
       <circle cx="100" cy="100" r="100" fill="url(#mSphere)"/>
 
-      <!-- maria: the dark basalt seas of the near side -->
-      <g filter="url(#mSoft)" fill="#5c6675">
-        <path fill-opacity="0.42" d="M44 62 C31 82 29 112 39 136 C47 153 62 158 70 147 C78 136 71 118 73 102 C75 86 67 66 57 58 C51 54 48 55 44 62 Z"/>
-        <path fill-opacity="0.46" d="M71 47 C60 54 57 71 66 83 C75 95 93 97 103 89 C113 81 111 62 101 54 C91 46 79 43 71 47 Z"/>
-        <path fill-opacity="0.43" d="M113 55 C104 62 104 77 113 85 C122 93 135 90 141 80 C147 70 142 57 132 53 C124 50 119 51 113 55 Z"/>
-        <path fill-opacity="0.41" d="M129 92 C120 99 120 113 130 121 C140 129 154 125 158 112 C162 100 154 89 144 87 C136 85 133 88 129 92 Z"/>
-        <path fill-opacity="0.38" d="M134 129 C128 137 130 149 138 153 C147 157 155 150 155 140 C155 130 144 125 134 129 Z"/>
-        <path fill-opacity="0.36" d="M72 129 C64 137 66 151 76 155 C86 159 95 151 93 141 C91 131 80 125 72 129 Z"/>
-        <ellipse fill-opacity="0.42" cx="167" cy="77" rx="13" ry="10"/>
+      <!-- a few soft craters, just enough to read as the moon -->
+      <g fill="#c79526">
+        <circle cx="132" cy="140" r="11" fill-opacity=".13"/>
+        <circle cx="74"  cy="112" r="8"  fill-opacity=".11"/>
+        <circle cx="112" cy="66"  r="6"  fill-opacity=".10"/>
+        <circle cx="52"  cy="78"  r="5"  fill-opacity=".09"/>
+        <circle cx="150" cy="92"  r="4"  fill-opacity=".09"/>
+        <circle cx="88"  cy="158" r="5"  fill-opacity=".10"/>
+        <circle cx="62"  cy="146" r="3.4" fill-opacity=".08"/>
+        <circle cx="146" cy="48"  r="3" fill-opacity=".07"/>
       </g>
 
-      <!-- Tycho's ray system -->
-      <g fill="#ffffff" opacity=".075" filter="url(#mSoft2)">
-        <path d="M86 157 L74 196 L92 196 Z"/>
-        <path d="M86 157 L36 186 L48 196 Z"/>
-        <path d="M86 157 L138 190 L128 196 Z"/>
-        <path d="M86 157 L22 140 L20 152 Z"/>
-        <path d="M86 157 L160 132 L164 144 Z"/>
-        <path d="M86 157 L96 92 L108 98 Z"/>
-      </g>
-
-      <!-- craters: dark floor with a sunlit wall toward the light -->
-      <g fill="#78818f">
-        <circle cx="132" cy="144" r="10" fill-opacity=".30" stroke="#fdfeff" stroke-opacity=".34" stroke-width="1.2"/>
-        <circle cx="76"  cy="121" r="7"  fill-opacity=".26" stroke="#fdfeff" stroke-opacity=".30" stroke-width="1"/>
-        <circle cx="114" cy="67"  r="5.5" fill-opacity=".24" stroke="#fdfeff" stroke-opacity=".28" stroke-width=".9"/>
-        <circle cx="49"  cy="89"  r="4.5" fill-opacity=".22" stroke="#fdfeff" stroke-opacity=".30" stroke-width=".9"/>
-        <circle cx="152" cy="92"  r="3.6" fill-opacity=".22"/>
-        <circle cx="61"  cy="49"  r="3.2" fill-opacity=".20"/>
-        <circle cx="139" cy="38"  r="2.6" fill-opacity=".18"/>
-        <circle cx="34"  cy="118" r="5.2" fill-opacity=".26"/>
-        <circle cx="104" cy="168" r="4.2" fill-opacity=".22" stroke="#fdfeff" stroke-opacity=".24" stroke-width=".8"/>
-        <circle cx="166" cy="115" r="3" fill-opacity=".20"/>
-      </g>
-      <!-- Tycho itself: bright, young, high-albedo -->
-      <circle cx="86" cy="157" r="4.6" fill="#ffffff" fill-opacity=".34"/>
-      <circle cx="86" cy="157" r="2.1" fill="#ffffff" fill-opacity=".55"/>
-
-      <!-- regolith grain -->
-      <rect width="200" height="200" filter="url(#mGrain)" opacity=".16" style="mix-blend-mode:overlay"/>
-      <!-- limb darkening last, so the disc reads as a sphere -->
+      <!-- faint surface grain -->
+      <rect width="200" height="200" filter="url(#mGrain)" opacity=".07" style="mix-blend-mode:overlay"/>
+      <!-- gentle limb shading -->
       <circle cx="100" cy="100" r="100" fill="url(#mLimb)"/>
     </g>
   </svg>
