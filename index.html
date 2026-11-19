@@ -343,9 +343,12 @@ ul{padding-left:20px;color:var(--text-dim)}
   .brand{display:none}
   .nav-links{margin-left:0}
 }
-/* ---------- wide / landscape displays ---------- */
+/* ---------- wide displays ---------- */
 /* Give the figures the extra width instead of leaving it as margin. Body copy
    stays on .narrow so the reading measure never grows past ~90 characters. */
+@media (min-width:1340px){
+  :root{--maxw:1220px}
+}
 @media (min-width:1500px){
   :root{--maxw:1300px}
   body{font-size:17.5px}
@@ -356,8 +359,28 @@ ul{padding-left:20px;color:var(--text-dim)}
   .narrow{max-width:860px}
   section{padding:96px 0}
 }
-/* Short-but-wide viewports (laptops, 16:9 at 720-800px tall): the hero used to
-   eat the whole first screen, so nothing below it was visible without scrolling. */
+/* ---------- portrait / vertical displays ---------- */
+/* A rotated monitor is short on width and long on height. Spend less of the
+   scarce width on side margin so the comparison grids stay legible, and use
+   the plentiful height for breathing room instead. */
+@media (orientation:portrait){
+  .wrap{padding:0 20px}
+}
+@media (orientation:portrait) and (min-width:1000px){
+  :root{--maxw:1240px}
+  section{padding:80px 0}
+  h1{font-size:clamp(2.5rem,5.4vw,3.6rem)}
+}
+/* Phones and tablets held upright: the hero is the only thing competing for
+   the fold, so keep it tight and let the first figure pull into view. */
+@media (orientation:portrait) and (max-width:860px){
+  header{padding:92px 0 34px}
+  section{padding:44px 0}
+}
+
+/* ---------- short landscape viewports ---------- */
+/* Laptops, 16:9 at 720-820px tall: the hero used to eat the whole first
+   screen, so nothing below it was visible without scrolling. */
 @media (orientation:landscape) and (max-height:820px){
   header{padding:46px 0 36px}
   h1{font-size:clamp(2.1rem,4.4vw,3.2rem)}
@@ -550,10 +573,8 @@ ul{padding-left:20px;color:var(--text-dim)}
       added.</figcaption>
     </figure>
 
-      </div>
-    </div>
 
-    <p style="margin-top:24px">At inference the model takes a daytime crop as the identity reference and
+    <p class="narrow" style="margin-inline:0;max-width:800px;margin-top:24px">At inference the model takes a daytime crop as the identity reference and
     renders that person under <strong>every camera and lighting environment it has learned</strong>, yielding
     a synthetic night-time set that covers the full illumination range of the target domain.</p>
   </div>
@@ -608,9 +629,14 @@ ul{padding-left:20px;color:var(--text-dim)}
   author    = {Bui, Toan Manh and Min, Donghyeok and
                Oh, Inyoung and Cho, Junghyun},
   booktitle = {British Machine Vision Conference (BMVC)},
-  year      = {2026}
+  year      = {2026},
+  note      = {To appear}
 }</pre>
     </div>
+    <p style="font-size:.9rem;color:var(--text-faint);margin-top:14px">The BMVC 2026 proceedings are not
+    published yet, so there is no DOI or page range to cite and no paper link to give. This entry will be
+    updated — along with the <strong style="color:var(--text-dim);font-weight:600">Paper</strong> button
+    above — as soon as the proceedings are online.</p>
   </div>
 </section>
 
