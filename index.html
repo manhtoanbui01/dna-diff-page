@@ -262,7 +262,6 @@ figcaption b{color:var(--text-dim);font-weight:600}
 /* ---------- cards ---------- */
 .grid{display:grid;gap:16px}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .card{background:linear-gradient(170deg,var(--panel),var(--ink-2));border:1px solid var(--line);
   border-radius:var(--radius);padding:24px;transition:.2s ease}
 .card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
@@ -272,21 +271,6 @@ figcaption b{color:var(--text-dim);font-weight:600}
   background:rgba(255,179,71,.14);color:var(--amber);border:1px solid rgba(255,179,71,.28)}
 .card.cy .num{background:rgba(95,212,255,.13);color:var(--cyan);border-color:rgba(95,212,255,.28)}
 .card.vi .num{background:rgba(169,139,255,.13);color:var(--violet);border-color:rgba(169,139,255,.28)}
-code.inl{font-family:var(--mono);font-size:.86em;background:rgba(255,255,255,.07);
-  padding:2px 6px;border-radius:5px;color:var(--amber-soft);border:1px solid var(--line)}
-
-/* ---------- stage list ---------- */
-.stages{display:grid;gap:14px;margin-top:26px}
-.stage{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:start;
-  background:linear-gradient(170deg,var(--panel),var(--ink-2));border:1px solid var(--line);
-  border-left:3px solid var(--amber);border-radius:var(--radius);padding:22px 24px}
-.stage:nth-child(2){border-left-color:#5fe08a}
-.stage:nth-child(3){border-left-color:var(--violet)}
-.stage .tag{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--text-faint);padding-top:4px;white-space:nowrap}
-.stage h3{margin-bottom:6px}
-.stage p{margin:0;font-size:.95rem}
-.stage .file{font-family:var(--mono);font-size:.8rem;color:var(--text-faint);margin-top:8px;display:block}
 
 /* ---------- code ---------- */
 .code{position:relative;background:#04070e;border:1px solid var(--line);border-radius:12px;
@@ -303,26 +287,6 @@ code.inl{font-family:var(--mono);font-size:.86em;background:rgba(255,255,255,.07
 .copy.ok{color:#5fe08a;border-color:rgba(95,224,138,.4)}
 pre{margin:0;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:13.2px;
   line-height:1.72;color:#d7e0f2}
-pre .c{color:#6c7a96}
-pre .k{color:var(--amber)}
-pre .s{color:#8fe3b0}
-
-/* ---------- table ---------- */
-.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
-table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:520px}
-th,td{padding:11px 16px;text-align:left;border-bottom:1px solid var(--line)}
-th{background:rgba(255,255,255,.04);font-size:12px;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--text-faint);font-weight:700}
-td{color:var(--text-dim)}
-tr:last-child td{border-bottom:none}
-td code{font-family:var(--mono);font-size:.86em;color:var(--amber-soft)}
-
-/* ---------- note ---------- */
-.note{display:grid;grid-template-columns:auto 1fr;gap:14px;background:rgba(95,212,255,.06);
-  border:1px solid rgba(95,212,255,.22);border-radius:12px;padding:16px 18px;margin-bottom:18px}
-.note .ic{font-size:17px;line-height:1.4}
-.note p{margin:0;font-size:.92rem;color:var(--text-dim)}
-.note.warn{background:rgba(255,179,71,.06);border-color:rgba(255,179,71,.24)}
 
 /* ---------- lightbox ---------- */
 .lb{position:fixed;inset:0;z-index:100;background:rgba(3,5,10,.93);display:none;
@@ -365,7 +329,7 @@ ul{padding-left:20px;color:var(--text-dim)}
   .moon::after{inset:-48px}
 }
 @media (max-width:860px){
-  .g3,.g2{grid-template-columns:minmax(0,1fr)}
+  .g3{grid-template-columns:minmax(0,1fr)}
   .stage{grid-template-columns:1fr;gap:6px}
   .stage .tag{padding-top:0}
   header{padding:112px 0 42px}
@@ -398,7 +362,6 @@ ul{padding-left:20px;color:var(--text-dim)}
       <a href="#method">Method</a>
       <a href="#diversity">Diversity</a>
       <a href="#beyond">Beyond People</a>
-      <a href="#start">Get Started</a>
       <a href="#cite">Citation</a>
     </div>
   </div>
@@ -515,7 +478,7 @@ ul{padding-left:20px;color:var(--text-dim)}
 <section id="method">
   <div class="wrap">
     <p class="eyebrow">Method</p>
-    <h2>Three stages, each named for what it adds</h2>
+    <h2>Three stages, one capability at a time</h2>
 
     <div class="grid g3" style="margin-bottom:34px">
       <div class="card">
@@ -547,37 +510,12 @@ ul{padding-left:20px;color:var(--text-dim)}
       added.</figcaption>
     </figure>
 
-    <div class="stages">
-      <div class="stage">
-        <div class="tag">Stage 1 · ILA</div>
-        <div>
-          <h3>Identity- and lighting-aware pre-training</h3>
-          <p>LoRA on the UNet plus a textual-inversion token per identity and per camera.</p>
-          <code class="file">Data_Generation/train_t2i_ila.py → finetune_stage1_ila/</code>
-        </div>
-      </div>
-      <div class="stage">
-        <div class="tag">Stage 2 · EnvToken</div>
-        <div>
-          <h3>Environment tokens for lighting diversity</h3>
-          <p>One learned token per lighting group per camera, initialised from the stage-1 weights.</p>
-          <code class="file">Data_Generation/train_t2i_envtoken.py → finetune_stage2_envtoken/</code>
-        </div>
-      </div>
-      <div class="stage">
-        <div class="tag">Stage 3 · IP-Adapter</div>
-        <div>
-          <h3>Identity preservation from a reference image</h3>
-          <p>IP-Adapter conditioning on OSNet identity features, adapted in <code class="inl">lora_ipadapter.py</code>.</p>
-          <code class="file">Data_Generation/train_t2i_ipadapter.py → finetune_stage3_ipadapter/</code>
-        </div>
       </div>
     </div>
 
-    <p style="margin-top:24px">At inference, <code class="inl">generate_t2i.py</code> takes daytime Market-1501
-    crops as identity references and generates night-time images for <strong>every camera / environment
-    combination</strong>, which can then be flattened into Market-1501 filename conventions and copied straight
-    into a NightReID training split.</p>
+    <p style="margin-top:24px">At inference the model takes a daytime crop as the identity reference and
+    renders that person under <strong>every camera and lighting environment it has learned</strong>, yielding
+    a synthetic night-time set that covers the full illumination range of the target domain.</p>
   </div>
 </section>
 
@@ -617,91 +555,6 @@ ul{padding-left:20px;color:var(--text-dim)}
   </div>
 </section>
 
-<section id="start">
-  <div class="wrap">
-    <p class="eyebrow">Get Started</p>
-    <h2>Generate in three steps</h2>
-    <p class="narrow" style="margin-inline:0;max-width:800px">You do not need to train anything. Released
-    weights cover all three stages — pull them, point the sampler at your daytime reference crops, and
-    generate. The full training recipe, data preparation and troubleshooting live in the
-    <a href="https://github.com/manhtoanbui01/DNA-Diff#readme" target="_blank" rel="noopener">repository
-    README</a>.</p>
-
-    <div class="grid g2" style="align-items:start;gap:20px;margin-top:26px">
-      <div>
-        <div class="code">
-          <div class="code-head"><span>1 · Environment</span><button class="copy">Copy</button></div>
-<pre><span class="c"># diffusers is pinned to 0.23.1 — later</span>
-<span class="c"># releases relocate the LoRA attn processors</span>
-git clone https://github.com/manhtoanbui01/DNA-Diff.git
-<span class="k">cd</span> DNA-Diff
-conda env create -f environment.yml
-conda activate dna-diff</pre>
-        </div>
-
-        <div class="code">
-          <div class="code-head"><span>2 · Base model + weights</span><button class="copy">Copy</button></div>
-<pre><span class="c"># Stable Diffusion v1.5 (scripts run --local_files_only)</span>
-huggingface-cli download \
-  stable-diffusion-v1-5/stable-diffusion-v1-5 \
-  --local-dir ./stable-diffusion-v1-5
-
-<span class="c"># released DNA-Diff weights (1.86 GB)</span>
-<span class="k">cd</span> dataset/NightReID_Market1501/
-wget https://huggingface.co/manhtoanbui01/DNA-Diff/resolve/main/finetune_model.tar.gz
-tar -xzf finetune_model.tar.gz</pre>
-        </div>
-      </div>
-
-      <div>
-        <div class="code">
-          <div class="code-head"><span>3 · Generate</span><button class="copy">Copy</button></div>
-<pre><span class="k">cd</span> Data_Generation
-<span class="k">source</span> scripts/sample.sh
-sample \
-  /abs/path/to/dataset/NightReID_Market1501/ \
-  /abs/path/to/dataset/NightReID_Market1501/cam7/env61/ \
-  /abs/path/to/stable-diffusion-v1-5 \
-  /abs/path/to/output_dir \
-  10 512 <span class="s">true</span>
-<span class="c">#          ^^^^ use_pretrained_weights</span></pre>
-        </div>
-
-        <div class="note warn">
-          <div class="ic">⚠️</div>
-          <p>Pass <code class="inl">true</code> as the 7th argument when using the <em>released</em> weights —
-          it selects the per-camera token counts those weights were trained with. Use
-          <code class="inl">false</code> for weights you trained yourself.</p>
-        </div>
-
-        <div class="note">
-          <div class="ic">💡</div>
-          <p>Don't want to run generation at all? The
-          <a href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">generated
-          images (260&nbsp;MB)</a> are released too — export them into a Market-1501-style training split with
-          <code class="inl">move_synthetic_market1501.py</code> and train your ReID model directly.</p>
-        </div>
-      </div>
-    </div>
-
-    <h3 style="margin:34px 0 14px;font-size:1.25rem">What ships with the release</h3>
-    <div class="tbl-wrap">
-      <table>
-        <thead><tr><th>Artefact</th><th>Size</th><th>What it is</th></tr></thead>
-        <tbody>
-          <tr><td><code>learned_embeds-steps-100000.bin</code></td><td>6.2 MB</td><td>Identity token embeddings (stage 1)</td></tr>
-          <tr><td><code>learned_embeds-steps-40000.bin</code></td><td>540 KB</td><td>Environment / lighting token embeddings (stage 2)</td></tr>
-          <tr><td><code>model.safetensors</code></td><td>171 MB</td><td>UNet LoRA + IP-Adapter attention (stage 3)</td></tr>
-          <tr><td><code>model_1.safetensors</code></td><td>6.1 MB</td><td>OSNet → IP-Adapter projection (stage 3)</td></tr>
-          <tr><td><code>generated_images.tar.gz</code></td><td>260 MB</td><td>Pre-generated synthetic night-time dataset</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p style="font-size:.9rem;color:var(--text-faint)">Inference also needs the base SD-1.5 checkpoint and the
-    <code class="inl">osnet_ain_x1_0</code> (MS+D+M→C) ReID backbone. Requirements: Linux x86_64, an NVIDIA GPU
-    with a CUDA 12.1-capable driver, and roughly 80 GB of free disk for data, checkpoints and output.</p>
-  </div>
-</section>
 
 <section id="cite">
   <div class="wrap narrow">
