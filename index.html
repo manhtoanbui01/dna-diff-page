@@ -236,7 +236,7 @@ h1 .grad{background:linear-gradient(100deg,var(--amber) 0%,var(--amber-soft) 38%
 .btn.primary{background:linear-gradient(100deg,#ffb347,#ff9a3c);color:#2a1700;border-color:transparent;
   box-shadow:0 8px 28px -10px rgba(255,160,60,.75)}
 .btn.primary:hover{box-shadow:0 12px 34px -10px rgba(255,160,60,.9)}
-.btn.disabled{opacity:.42;cursor:not-allowed;pointer-events:none}
+.btn.disabled{opacity:.58;cursor:default;pointer-events:none}
 .btn .soon{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   background:rgba(255,255,255,.14);padding:2px 7px;border-radius:5px}
 
@@ -489,13 +489,13 @@ ul{padding-left:20px;color:var(--text-dim)}
       <span class="sep">·</span>
       <span class="au">Junghyun Cho</span>
     </p>
-    <p class="affil">British Machine Vision Conference (BMVC) 2026 · paper link coming soon</p>
+    <p class="affil">British Machine Vision Conference (BMVC) 2026</p>
 
     <div class="btns">
-      <a class="btn disabled" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper <span class="soon">Coming soon</span></a>
-      <a class="btn primary" href="https://github.com/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.4 4.9 18.4 5.2 18.4 5.2c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>Code</a>
-      <a class="btn" href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">🤗 Weights</a>
-      <a class="btn" href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Generated Images</a>
+      <span class="btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper <span class="soon">Coming soon</span></span>
+      <span class="btn disabled"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.4 4.9 18.4 5.2 18.4 5.2c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>Code <span class="soon">Coming soon</span></span>
+      <span class="btn disabled">🤗 Weights <span class="soon">Coming soon</span></span>
+      <span class="btn disabled"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Generated Images <span class="soon">Coming soon</span></span>
     </div>
   </div>
 </header>
@@ -791,10 +791,7 @@ ul{padding-left:20px;color:var(--text-dim)}
 
 <footer>
   <div class="wrap">
-    <p style="margin-bottom:8px">DNA-Diff · BMVC 2026 ·
-      <a href="https://github.com/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">GitHub</a> ·
-      <a href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">Hugging Face</a>
-    </p>
+    <p style="margin-bottom:8px">DNA-Diff · British Machine Vision Conference 2026</p>
     <p style="font-size:.82rem;opacity:.75;margin:0">Page template released under the
       <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>
       licence. Generated imagery is for research use only.</p>
