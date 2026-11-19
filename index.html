@@ -223,7 +223,7 @@ h1 .grad{background:linear-gradient(100deg,var(--amber) 0%,var(--amber-soft) 38%
 .authors .au{color:var(--text);font-weight:500;white-space:nowrap}
 .authors a.au{border-bottom:1px solid rgba(255,179,71,.38);transition:.15s}
 .authors a.au:hover{color:var(--amber);border-bottom-color:var(--amber);text-decoration:none}
-.authors .sep{color:var(--text-faint);margin:0 11px}
+.authors .sep{color:var(--text-faint);margin:0 7px}
 .affil{font-size:.93rem;color:var(--text-faint);margin:0 0 32px}
 
 .btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:10px}
@@ -302,10 +302,12 @@ pre{margin:0;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:13.2
 /* ---------- city skyline ---------- */
 .cityscape{position:relative;margin-top:40px;line-height:0;pointer-events:none;
   filter:drop-shadow(0 -26px 50px rgba(255,170,80,.07))}
-/* Height must stay >= width/5.54 (the viewBox aspect), or `slice` crops the
-   building tops off instead of the sides. 18.5vw keeps us just under that
-   ratio at every width, so only the sides are ever trimmed. */
-.cityscape svg{display:block;width:100%;height:max(150px,18.5vw)}
+/* Height must stay >= width/8.08 (the viewBox aspect), or `slice` crops the
+   building tops off instead of the sides. 12.7vw keeps us just under that
+   ratio at every width, so only the sides are ever trimmed. Widening the
+   drawing from 1440 to 2100 units is what lets the band stay a sane height
+   on wide monitors - it shows more city instead of growing taller. */
+.cityscape svg{display:block;width:100%;height:max(142px,12.7vw)}
 .cityscape .blink{animation:blink 2.6s steps(1,end) infinite}
 .cityscape .blink.b2{animation-duration:3.4s;animation-delay:.9s}
 .cityscape .lit{animation:lit 5.5s ease-in-out infinite alternate}
@@ -341,6 +343,38 @@ ul{padding-left:20px;color:var(--text-dim)}
   .brand{display:none}
   .nav-links{margin-left:0}
 }
+/* ---------- wide / landscape displays ---------- */
+/* Give the figures the extra width instead of leaving it as margin. Body copy
+   stays on .narrow so the reading measure never grows past ~90 characters. */
+@media (min-width:1500px){
+  :root{--maxw:1300px}
+  body{font-size:17.5px}
+  section{padding:84px 0}
+}
+@media (min-width:1800px){
+  :root{--maxw:1460px}
+  .narrow{max-width:860px}
+  section{padding:96px 0}
+}
+/* Short-but-wide viewports (laptops, 16:9 at 720-800px tall): the hero used to
+   eat the whole first screen, so nothing below it was visible without scrolling. */
+@media (orientation:landscape) and (max-height:820px){
+  header{padding:46px 0 36px}
+  h1{font-size:clamp(2.1rem,4.4vw,3.2rem)}
+  .tagline{font-size:clamp(1rem,1.8vw,1.18rem);margin-bottom:22px}
+  .venue{margin-bottom:18px}
+  .authors{font-size:1rem;line-height:1.7}
+  .affil{margin-bottom:24px}
+  section{padding:54px 0}
+  .moon{width:124px;height:124px;top:16px}
+  .moon::after{inset:-50px}
+}
+@media (orientation:landscape) and (max-height:620px){
+  header{padding:34px 0 28px}
+  .moon{width:96px;height:96px}
+  .moon::after{inset:-38px}
+}
+
 @media (prefers-reduced-motion:reduce){
   *{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
@@ -424,12 +458,18 @@ ul{padding-left:20px;color:var(--text-dim)}
 
     <!-- TODO: add affiliation markers + personal/Scholar links if you want them -->
     <p class="authors">
-      <a class="au" href="https://github.com/manhtoanbui01" target="_blank" rel="noopener">Toan Manh Bui</a><span class="sep">·</span><span class="au">Donghyeok Min</span><span class="sep">·</span><span class="au">Inyoung Oh</span><span class="sep">·</span><span class="au">Junghyun Cho</span>
+      <a class="au" href="https://github.com/manhtoanbui01" target="_blank" rel="noopener">Toan Manh Bui</a>
+      <span class="sep">·</span>
+      <span class="au">Donghyeok Min</span>
+      <span class="sep">·</span>
+      <span class="au">Inyoung Oh</span>
+      <span class="sep">·</span>
+      <span class="au">Junghyun Cho</span>
     </p>
-    <p class="affil">British Machine Vision Conference (BMVC) 2026</p>
+    <p class="affil">British Machine Vision Conference (BMVC) 2026 · paper link coming soon</p>
 
     <div class="btns">
-      <a class="btn disabled" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper <span class="soon">Soon</span></a>
+      <a class="btn disabled" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Paper <span class="soon">Coming soon</span></a>
       <a class="btn primary" href="https://github.com/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.8.1-.7.1-.7 1.2.1 1.9 1.2 1.9 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.4 4.9 18.4 5.2 18.4 5.2c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>Code</a>
       <a class="btn" href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener">🤗 Weights</a>
       <a class="btn" href="https://huggingface.co/manhtoanbui01/DNA-Diff" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>Generated Images</a>
@@ -591,7 +631,7 @@ ul{padding-left:20px;color:var(--text-dim)}
 </main>
 
 <div class="cityscape" aria-hidden="true">
-<svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 2100 260" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <!-- lit window grids -->
     <pattern id="winFar" width="17" height="23" patternUnits="userSpaceOnUse">
@@ -627,6 +667,13 @@ ul{padding-left:20px;color:var(--text-dim)}
       <rect x="1128" y="82"  width="62"  height="178"/>
       <rect x="1198" y="130" width="98"  height="130"/>
       <rect x="1304" y="152" width="136" height="108"/>
+      <rect x="1446" y="96"  width="68"  height="164"/>
+      <rect x="1522" y="140" width="104" height="120"/>
+      <rect x="1634" y="110" width="78"  height="150"/>
+      <rect x="1720" y="158" width="118" height="102"/>
+      <rect x="1846" y="84"  width="60"  height="176"/>
+      <rect x="1914" y="132" width="96"  height="128"/>
+      <rect x="2018" y="150" width="82"  height="110"/>
     </g>
 
     <!-- near row -->
@@ -643,26 +690,35 @@ ul{padding-left:20px;color:var(--text-dim)}
       <rect x="1122" y="190" width="100" height="70"/>
       <rect x="1230" y="160" width="118" height="100"/>
       <rect x="1356" y="176" width="104" height="84"/>
+      <rect x="1468" y="160" width="126" height="100"/>
+      <rect x="1602" y="188" width="98"  height="72"/>
+      <rect x="1708" y="154" width="132" height="106"/>
+      <rect x="1848" y="182" width="90"  height="78"/>
+      <rect x="1946" y="166" width="160" height="94"/>
     </g>
   </defs>
 
   <!-- warm light pollution rising off the city -->
-  <rect x="0" y="30" width="1440" height="230" fill="url(#haze)"/>
+  <rect x="0" y="30" width="2100" height="230" fill="url(#haze)"/>
   <!-- street-level glow, behind the near row so it reads as depth -->
   <ellipse cx="230"  cy="236" rx="150" ry="30" fill="url(#pool)"/>
   <ellipse cx="640"  cy="240" rx="180" ry="32" fill="url(#pool)"/>
   <ellipse cx="1020" cy="234" rx="140" ry="28" fill="url(#pool)"/>
   <ellipse cx="1340" cy="240" rx="150" ry="30" fill="url(#pool)"/>
+  <ellipse cx="1660" cy="236" rx="140" ry="28" fill="url(#pool)"/>
+  <ellipse cx="1990" cy="240" rx="160" ry="30" fill="url(#pool)"/>
 
   <!-- antenna masts with aircraft-warning lights -->
   <g stroke="#070e1c" stroke-width="2">
     <line x1="400" y1="72" x2="400" y2="38"/>
     <line x1="775" y1="64" x2="775" y2="24"/>
     <line x1="1159" y1="82" x2="1159" y2="52"/>
+    <line x1="1876" y1="84" x2="1876" y2="46"/>
   </g>
   <circle class="blink"    cx="400"  cy="36" r="2.6" fill="#ff5f5f"/>
   <circle class="blink b2" cx="775"  cy="22" r="2.6" fill="#ff5f5f"/>
   <circle class="blink"    cx="1159" cy="50" r="2.2" fill="#ff5f5f" style="animation-delay:1.7s"/>
+  <circle class="blink b2" cx="1876" cy="44" r="2.5" fill="#ff5f5f" style="animation-delay:.6s"/>
 
   <use href="#far" fill="#081120"/>
   <use href="#far" fill="url(#winFar)"/>
@@ -685,6 +741,11 @@ ul{padding-left:20px;color:var(--text-dim)}
     <rect class="lit l3" x="1145" y="128" width="7" height="9"/>
     <rect class="lit"    x="1253" y="192" width="7" height="9"/>
     <rect class="lit l2" x="1319" y="204" width="7" height="9"/>
+    <rect class="lit l3" x="1468" y="124" width="7" height="9"/>
+    <rect class="lit"    x="1551" y="172" width="7" height="9"/>
+    <rect class="lit l2" x="1733" y="186" width="7" height="9"/>
+    <rect class="lit l3" x="1869" y="112" width="7" height="9"/>
+    <rect class="lit"    x="1994" y="198" width="7" height="9"/>
   </g>
 
   <!-- rooftop clutter: tanks, stair huts, a spire -->
@@ -694,6 +755,9 @@ ul{padding-left:20px;color:var(--text-dim)}
     <rect x="774" y="140" width="22" height="12"/>
     <rect x="998" y="158" width="30" height="11"/>
     <rect x="1262" y="150" width="24" height="12"/>
+    <rect x="1562" y="128" width="28" height="12"/>
+    <rect x="1766" y="142" width="30" height="11"/>
+    <rect x="1972" y="120" width="22" height="12"/>
   </g>
   <path d="M1086 168 l10 -26 l10 26 z" fill="#03060c"/>
 </svg>
